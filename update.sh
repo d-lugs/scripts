@@ -1,10 +1,35 @@
 #!/bin/bash
 
 # Little bash script to gracefully update apt packages and docker containers.
+# Usage: ./update.sh [OPTIONS]
+# Options:
+#
+# -a    Send discord alert (optional) - requires alert-discord script be added to /bin
+
+if [ "$1" == "-a" ]; then
+    NOTIFY="true"
+elif [ -z $1 ]; then
+    NOTIFY="false"
+else
+    echo -e "Invalid option: $1"
+    exit 1
+fi
+
+send_alert() {
+    if [ "$NOTIFY" == "true" ]; then
+        alert-discord "$1"
+        if [ $? -ne 0 ]; then
+            echo -e "Failed to send Discord alert"
+        fi
+    else
+        echo -e $1
+    fi
+}
 
 check_failure() {
         if [ $? -ne 0 ]; then
-                echo "Error: Failed to $1."
+                MESSAGE="Error updating: Failed to $1."
+                send_alert $MESSAGE
                 exit 1
         fi
 }
@@ -74,4 +99,5 @@ start_stacks $STACK_LIST
 
 prune_images
 
-echo -e "\nDone."
+send_alert "Update successful!"
+exit 0
