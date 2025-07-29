@@ -28,7 +28,7 @@ send_alert() {
 
 check_failure() {
         if [ $? -ne 0 ]; then
-                MESSAGE="Error updating: Failed to $1."
+                MESSAGE="Update error: Failed to $1."
                 send_alert $MESSAGE
                 exit 1
         fi
