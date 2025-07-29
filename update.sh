@@ -17,7 +17,7 @@ fi
 
 send_alert() {
     if [ "$NOTIFY" == "true" ]; then
-        alert-discord "$1"
+        alert-discord "$HOSTNAME: $1"
         if [ $? -ne 0 ]; then
             echo -e "Failed to send Discord alert"
         fi
