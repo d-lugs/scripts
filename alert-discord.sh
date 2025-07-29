@@ -6,7 +6,7 @@
 # Requires a variables file with the following line:
 # ALERT_WEBHOOK_URL="https://discord.com/api/webhooks/<your webhook token here>"
 
-. /root/discord-vars
+. /root/scripts/discord-vars
 
 MESSAGE=$1
 
