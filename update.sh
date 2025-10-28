@@ -6,6 +6,9 @@
 #
 # -a    Send discord alert (optional) - requires alert-discord script be added to /bin
 
+logdir="/root/updatelogs"
+logfile="$logdir/update-$(date +"%m%d%Y").log"
+
 if [ "$1" == "-a" ]; then
     NOTIFY="true"
 elif [ -z $1 ]; then
@@ -86,18 +89,18 @@ prune_images() {
         check_failure "prune images"
 }
 
-# list all running Docker stacks
-STACK_LIST+=($(docker compose ls | grep running | awk '{print $1}'))
+main() {
+    # list all running Docker stacks
+    STACK_LIST+=($(docker compose ls | grep running | awk '{print $1}'))
+    pull_updates $STACK_LIST
+    stop_stacks $STACK_LIST
+    upgrade_apt_packages
+    start_stacks $STACK_LIST
+    prune_images
 
-pull_updates $STACK_LIST
+    send_alert "Update successful!"
+}
 
-stop_stacks $STACK_LIST
+main > "$logfile" 2>&1
 
-upgrade_apt_packages
-
-start_stacks $STACK_LIST
-
-prune_images
-
-send_alert "Update successful!"
 exit 0
