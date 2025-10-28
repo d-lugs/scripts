@@ -8,7 +8,7 @@
 
 . /root/scripts/discord-vars
 
-MESSAGE=$1
+MESSAGE=$@
 
 DATA='{"content":"'$MESSAGE'"}'
 
