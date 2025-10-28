@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # Little bash script to gracefully update apt packages and docker containers.
 # Usage: ./update.sh [OPTIONS]
@@ -20,7 +20,17 @@ fi
 
 send_alert() {
     if [ "$NOTIFY" == "true" ]; then
-        alert-discord "$HOSTNAME: $1"
+        local USERID ALERT_WEBHOOK_URL
+        . /root/scripts/discord-vars
+
+        msg="$@"
+        curl -s -X POST \
+            -F "username=$HOSTNAME" \
+            -F 'content="<@'"$USERID"'>
+'"$msg"'"' \
+            -F "file=@$logfile" \
+            $ALERT_WEBHOOK_URL
+
         if [ $? -ne 0 ]; then
             echo -e "Failed to send Discord alert"
         fi
@@ -31,9 +41,8 @@ send_alert() {
 
 check_failure() {
         if [ $? -ne 0 ]; then
-                MESSAGE="Update error: Failed to $1."
-                send_alert $MESSAGE
-                exit 1
+            send_alert "ERROR: Failed to $1. (exit code: $?)"
+            exit 1
         fi
 }
 
@@ -92,15 +101,19 @@ prune_images() {
 main() {
     # list all running Docker stacks
     STACK_LIST+=($(docker compose ls | grep running | awk '{print $1}'))
-    pull_updates $STACK_LIST
-    stop_stacks $STACK_LIST
-    upgrade_apt_packages
-    start_stacks $STACK_LIST
-    prune_images
 
-    send_alert "Update successful!"
+    pull_updates $STACK_LIST
+
+    stop_stacks $STACK_LIST
+
+    upgrade_apt_packages
+
+    start_stacks $STACK_LIST
+
+    prune_images
 }
 
 main > "$logfile" 2>&1
+send_alert "Update successful!"
 
 exit 0
