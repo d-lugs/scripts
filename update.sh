@@ -99,6 +99,8 @@ prune_images() {
 }
 
 main() {
+    echo -e "$(hostname | tr 'a-z' 'A-Z') UPDATE LOG ($(date +"%m-%d-%Y"))\n"
+
     # list all running Docker stacks
     STACK_LIST+=($(docker compose ls | grep running | awk '{print $1}'))
 
