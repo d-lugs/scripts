@@ -9,11 +9,15 @@
 #                   ALERT_WEBHOOK_URL   Discord webhook URL
 
 
+# Get absolute path of script
+path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
+cd $path
+
 # Set logging location
 if [ ! -d ./log ]; then
-    mkdir ./log
+    mkdir $path/log
 fi
-logfile="./log/update-$(date +"%m%d%Y").log"
+logfile="$path/log/update-$(date +"%m%d%Y").log"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
