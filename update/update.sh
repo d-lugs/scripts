@@ -4,24 +4,38 @@
 # Usage: ./update.sh [OPTIONS]
 # Options:
 #
-# -a    Send discord alert (optional) - requires alert-discord script be added to /bin
+# -a, --alert   Send discord alert (optional) - requires .env with the following variables:
+#                   USERID              Discord user id (for tagging)
+#                   ALERT_WEBHOOK_URL   Discord webhook URL
 
+
+# Set logging location
 logdir="/root/updatelogs"
 logfile="$logdir/update-$(date +"%m%d%Y").log"
 
-if [ "$1" == "-a" ]; then
-    NOTIFY="true"
-elif [ -z $1 ]; then
-    NOTIFY="false"
-else
-    echo -e "Invalid option: $1"
-    exit 1
-fi
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--alert)
+      NOTIFY="true"
+      shift # past argument
+      shift # past value
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
 
 send_alert() {
     if [ "$NOTIFY" == "true" ]; then
         local USERID ALERT_WEBHOOK_URL
-        . /root/scripts/discord-vars
+        . ../.env
 
         msg="$@"
         curl -s -X POST \
