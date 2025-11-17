@@ -10,8 +10,10 @@
 
 
 # Set logging location
-logdir="/root/updatelogs"
-logfile="$logdir/update-$(date +"%m%d%Y").log"
+if [ ! -d ./log ]; then
+    mkdir ./log
+fi
+logfile="./log/update-$(date +"%m%d%Y").log"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
