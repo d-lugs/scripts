@@ -70,7 +70,7 @@ check_failure() {
 }
 
 pull_updates() {
-        echo -e "Updating package list..."
+        echo -e "\nUpdating package list..."
         sudo apt update --quiet
         check_failure "update package lists"
 
