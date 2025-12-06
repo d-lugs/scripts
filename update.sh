@@ -8,6 +8,7 @@
 #                   USERID              Discord user id (for tagging)
 #                   ALERT_WEBHOOK_URL   Discord webhook URL
 
+start_time=$(date +"%s")
 
 # Get absolute path of script
 path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
@@ -44,6 +45,8 @@ send_alert() {
         . ../.env
 
         msg="$@"
+        echo $msg
+
         curl -s -X POST \
             -F "username=$HOSTNAME" \
             -F 'content="<@'"$USERID"'>
@@ -68,13 +71,13 @@ check_failure() {
 
 pull_updates() {
         echo -e "Updating package list..."
-        sudo apt update
+        sudo apt update --quiet
         check_failure "update package lists"
 
         for stack in "${STACK_LIST[@]}";
         do
                 echo -e "\nPulling images for stack: $stack"
-                docker compose -f "/opt/$stack/docker-compose.yaml" pull
+                docker compose -f "/opt/$stack/docker-compose.yaml" pull --quiet
                 check_failure "pull images for stack: $stack"
         done
 }
@@ -91,11 +94,11 @@ stop_stacks() {
 
 upgrade_apt_packages() {
         echo -e "\nUpgrading installed packages..."
-        sudo apt upgrade -y
+        sudo apt upgrade -y --quiet
         check_failure "upgrade packages"
 
         echo -e "\nRemoving unnecessary packages..."
-        sudo apt autoremove -y
+        sudo apt autoremove -y --quiet
         check_failure "remove unnecessary packages"
 
         echo -e "\nCleaning up package cache..."
@@ -114,28 +117,24 @@ start_stacks() {
 
 prune_images() {
         echo -e "\nPruning old images..."
-        docker image prune -f
+        docker image prune -f --quiet
         check_failure "prune images"
 }
 
-main() {
-    echo -e "$(hostname | tr 'a-z' 'A-Z') UPDATE LOG ($(date +"%m-%d-%Y"))\n"
+{
+    echo -e "$(hostname | tr 'a-z' 'A-Z') UPDATE LOG $(date +"%m-%d-%Y")\nStart Time: $(date --date='@$start_time')"
 
     # list all running Docker stacks
     STACK_LIST+=($(docker compose ls | grep running | awk '{print $1}'))
 
     pull_updates $STACK_LIST
-
     stop_stacks $STACK_LIST
-
     upgrade_apt_packages
-
     start_stacks $STACK_LIST
-
     prune_images
-}
 
-main > "$logfile" 2>&1
-send_alert "Update successful!"
+    elapsed=$start_time-$(date +"%s")
+    send_alert "Update Successful! Time elapsed: $elapsed"
+} | tee -a "$logfile" 2>&1
 
 exit 0
