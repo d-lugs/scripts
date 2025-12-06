@@ -8,7 +8,7 @@
 #                   USERID              Discord user id (for tagging)
 #                   ALERT_WEBHOOK_URL   Discord webhook URL
 
-start_time="$(date +"%s")"
+start_time=$(date +"%s")
 
 # Get absolute path of script
 path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
@@ -122,7 +122,7 @@ prune_images() {
 }
 
 {
-    echo -e "$(hostname | tr 'a-z' 'A-Z') UPDATE LOG $(date +"%m-%d-%Y")\nStart Time: $(date --date='@$start_time')"
+    echo -e "$(hostname | tr 'a-z' 'A-Z') UPDATE LOG $(date --date='@$start_time' +"%m-%d-%Y %H:%M:%S")"
 
     # list all running Docker stacks
     STACK_LIST+=($(docker compose ls | grep running | awk '{print $1}'))
