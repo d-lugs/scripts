@@ -8,7 +8,7 @@
 #                   USERID              Discord user id (for tagging)
 #                   ALERT_WEBHOOK_URL   Discord webhook URL
 
-start_time=$(date +"%s")
+start_time="$(date +"%s")"
 
 # Get absolute path of script
 path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
