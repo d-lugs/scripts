@@ -117,7 +117,7 @@ start_stacks() {
 
 prune_images() {
         echo -e "\nPruning old images..."
-        docker image prune -f --quiet
+        docker image prune -f
         check_failure "prune images"
 }
 
@@ -133,8 +133,7 @@ prune_images() {
     start_stacks $STACK_LIST
     prune_images
 
-    elapsed=$start_time-$(date +"%s")
-    send_alert "Update Successful! Time elapsed: $elapsed"
+    send_alert "Update Successful! Time elapsed: $(($(date +"%s")-$start_time))"
 } | tee -a "$logfile" 2>&1
 
 exit 0
