@@ -133,7 +133,7 @@ prune_images() {
     start_stacks $STACK_LIST
     prune_images
 
-    send_alert "Update Successful! Time elapsed: $(($(date +"%s")-$start_time))"
+    send_alert "Update Successful! Time elapsed: $(($(date +"%s")-$start_time)) seconds"
 } | tee -a "$logfile" 2>&1
 
 exit 0
