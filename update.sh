@@ -42,7 +42,7 @@ done
 send_alert() {
     if [ "$NOTIFY" == "true" ]; then
         local USERID ALERT_WEBHOOK_URL
-        . ../.env
+        . .env
 
         msg="$@"
         echo $msg
