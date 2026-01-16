@@ -1,0 +1,29 @@
+# Rsync exclusion list
+
+/home/.bash_history
+/home/**/.cache/**
+/home/**/.mozille/firefox/*/cache*/**
+/home/**/.config/*/Cache/**
+/home/**/.local/share/icons/**
+/var/lib/docker/overlay2/**
+/var/lib/docker/image/**
+/var/lib/apt/lists/**
+/var/lib/systemd/coredump/**
+/root/.cache/**
+/root/.bash_history
+/usr/local/**/share/doc/**
+/usr/local/**/man/**
+/usr/local/**/build/**
+/usr/local/**/target/**
+/opt/**/cache/**
+
+# TrueNAS mount dir
+/data/**
+
+# generic filenames
+**/*.tmp
+**/*.swp
+**/*.bak
+**/*.pid
+**/*.lock
+**/*.core

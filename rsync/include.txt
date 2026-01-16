@@ -1,0 +1,8 @@
+/etc/
+/home/
+/opt/
+/root/
+/usr/local/
+/var/lib/
+/var/log/
+/var/snap/
