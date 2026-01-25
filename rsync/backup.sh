@@ -5,7 +5,8 @@
 log_file="/var/log/rsync/backup_$(date +"%Y%m%d").log"
 include_file="/root/rsync/include.txt"
 exclude_file="/root/rsync/exclude.txt"
-password_file="/root/rsync/password.txt"
+
+. .env
 
 # Start backup
 echo "Starting backup: $(date '+%Y-%m-%d %H:%M:%S')"
