@@ -2,9 +2,13 @@
 
 # rsync backup script
 
+# Get absolute path of script
+path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
+cd $path
+
 log_file="/var/log/rsync/backup_$(date +"%Y%m%d").log"
-include_file="/root/rsync/include.txt"
-exclude_file="/root/rsync/exclude.txt"
+include_file="./include.txt"
+exclude_file="./exclude.txt"
 
 . .env
 
