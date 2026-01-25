@@ -15,10 +15,10 @@ path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
 cd $path
 
 # Set logging location
-if [ ! -d ./log ]; then
-    mkdir $path/log
+if [ ! -d /var/log/update ]; then
+    mkdir /var/log/update
 fi
-logfile="$path/log/update-$(date +"%m%d%Y").log"
+logfile="/var/log/update/update-$(date +"%m%d%Y").log"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
