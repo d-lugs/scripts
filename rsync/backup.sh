@@ -6,20 +6,20 @@
 path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
 cd $path
 
+. .env
+export RSYNC_PASSWORD=$RSYNC_PASSWORD
+
 log_file="/var/log/rsync/backup_$(date +"%Y%m%d").log"
 include_file="./include.txt"
 exclude_file="./exclude.txt"
-
-. .env
 
 # Start backup
 echo "Starting backup: $(date '+%Y-%m-%d %H:%M:%S')"
 rsync -varp --delete --relative \
     --files-from="${include_file}" \
     --exclude-from="${exclude_file}" \
-    --password-file="${password_file}" \
     --log-file="${log_file}" \
-    "/" "rsync://rsync@qnap.lan:/Backup/$HOSTNAME"
+    "/" "rsync://rsync@$RSYNC_HOST:/Backup/$HOSTNAME"
 status=$?
 echo "Backup completed: $(date '+%Y-%m-%d %H:%M:%S')"
 
