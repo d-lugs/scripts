@@ -77,8 +77,6 @@ check_failure(){
         --files-from="${include_file}" \
         --exclude-from="${exclude_file}" \
         --log-file="${log_file}" \
-        --list-only \
-        --quiet \
         "/" "rsync://rsync@$RSYNC_HOST:/Backup/$HOSTNAME"
     check_failure
     send_alert "$(date '+%Y/%m/%d %H:%M:%S') Backup completed (Time elapsed: $(($(date +"%s")-$start_time)) seconds)"
