@@ -2,9 +2,11 @@
 
 # rsync backup script
 # Usage: ./backup.sh [OPTIONS]
+# Required environment variables
+#   RSYNC_HOST
+#   RSYNC_PASSWORD
 # Options:
-#
-# -a, --alert   Send discord alert (optional) requires .env with the following variables:
+#   -a, --alert   Send discord alert (optional) requires the following variables:
 #                   USERID              Discord user id (for tagging)
 #                   ALERT_WEBHOOK_URL   Discord webhook URL
 
