@@ -31,6 +31,7 @@ while [[ $# -gt 0 ]]; do
             shift # past argument
             ;;
         --dry-run)
+            testmode="true"
             options+="--list-only"
             shift
             ;;
@@ -47,17 +48,24 @@ done
 
 send_alert() {
     if [ "$notify" == "true" ]; then
-        local DISCORD_USERID ALERT_WEBHOOK_URL
+        local DISCORD_USERID ALERT_WEBHOOK_URL TEST_WEBHOOK_URL
         . .env
 
-        msg="$@"
-        echo $msg
+        if [ "$testmode" == "true" ]; then
+            WEBHOOK_URL="$TEST_WEBHOOK_URL"
+        else
+            WEBHOOK_URL="$ALERT_WEBHOOK_URL"
+        fi
+
+        # ensure escape characters are interpreted in alert
+        msg=$(echo -e "$@")
+        echo "$msg"
 
         curl -s -X POST \
             -F "username=$HOSTNAME" \
             -F 'content="<@'"$DISCORD_USERID"'>
 '"$msg"'"' \
-            $ALERT_WEBHOOK_URL
+            $WEBHOOK_URL
 
         if [ $? -ne 0 ]; then
             echo -e "Failed to send Discord alert"
