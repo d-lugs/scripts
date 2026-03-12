@@ -58,13 +58,12 @@ send_alert() {
         fi
 
         # ensure escape characters are interpreted in alert
-        msg=$(echo -e "$@")
-        echo "$msg"
+        echo -e "$@"
+        msg=$(echo -e "<@$DISCORD_USERID>\n$@")
 
         curl -s -X POST \
             -F "username=$HOSTNAME" \
-            -F 'content="<@'"$DISCORD_USERID"'>
-'"$msg"'"' \
+            -F 'content="'"$msg"'"' \
             $WEBHOOK_URL
 
         if [ $? -ne 0 ]; then
