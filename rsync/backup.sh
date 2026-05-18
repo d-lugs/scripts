@@ -2,22 +2,42 @@
 
 # rsync backup script
 # Usage: ./backup.sh [OPTIONS]
+#
 # Required environment variables
-#   RSYNC_HOST
+#   RSYNC_HOST          hostname or IP
+#   RSYNC_USERNAME
 #   RSYNC_PASSWORD
+#
 # Options:
-#   -a, --alert      Send discord alert (optional) requires the following variables:
-#                      USERID              Discord user id (for tagging)
-#                      ALERT_WEBHOOK_URL   Discord webhook URL
-#   -b, --background Run rsync in the background and exit immediately
+#   -a, --alert         Send discord alert - requires the following envrionment variables:
+#                           USERID              Discord user id (for tagging)
+#                           ALERT_WEBHOOK_URL   Discord webhook URL
+#   -b, --background    Run rsync in the background and exit immediately
+
+
 
 # Get absolute path of script
 path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
 cd $path
 
-log_file="/var/log/rsync/backup_$(date +"%Y%m%d").log"
 include_file="./include.txt"
 exclude_file="./exclude.txt"
+
+# initialize log file
+log_dir="/var/log/rsync"
+log_file="$log_dir/backup_$(date +"%Y%m%d").log"
+touch $log_file
+
+# rotate logs
+keep_logs="$(ls $log_dir | grep -oP "^backup_\d{8}\.log$" | tail -5)"
+for file in $(ls $log_dir); do
+    # skip files that aren't backup logs
+    if [ -z $(echo $file | grep -oP "^backup_\d{8}\.log$") ]; then
+        continue
+    elif [[ "$file" != "$(echo $keep_logs | grep -o $file)" ]]; then
+        rm -f $log_dir/$file
+    fi
+done
 
 # parse arguments
 while [[ $# -gt 0 ]]; do
