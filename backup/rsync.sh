@@ -25,6 +25,9 @@ exclude_file="./exclude.txt"
 
 # initialize log file
 log_dir="/var/log/rsync"
+if [ ! -d $log_dir ]; then
+    mkdir $log_dir
+fi
 log_file="$log_dir/backup_$(date +"%Y%m%d").log"
 touch $log_file
 

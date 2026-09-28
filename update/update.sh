@@ -15,10 +15,22 @@ path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P)
 cd $path
 
 # Set logging location
-if [ ! -d /var/log/update ]; then
-    mkdir /var/log/update
+log_dir="/var/log/update"
+if [ ! -d "$log_dir" ]; then
+    mkdir $log_dir
 fi
-logfile="/var/log/update/update-$(date +"%m%d%Y").log"
+log_file="$logdir/update-$(date +"%m%d%Y").log"
+
+# Rotate logs
+keep_logs="$(ls $log_dir | grep -oP "^backup_\d{8}\.log$" | tail -5)"
+for file in $(ls $log_dir); do
+    # skip files that aren't backup logs
+    if [ -z $(echo $file | grep -oP "^backup_\d{8}\.log$") ]; then
+        continue
+    elif [[ "$file" != "$(echo $keep_logs | grep -o $file)" ]]; then
+        rm -f $log_dir/$file
+    fi
+done
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -51,7 +63,7 @@ send_alert() {
             -F "username=$HOSTNAME" \
             -F 'content="<@'"$USERID"'>
 '"$msg"'"' \
-            -F "file=@$logfile" \
+            -F "file=@$log_file" \
             $ALERT_WEBHOOK_URL
 
         if [ $? -ne 0 ]; then
@@ -134,6 +146,6 @@ prune_images() {
     prune_images
 
     send_alert "Update Successful! Time elapsed: $(($(date +"%s")-$start_time)) seconds"
-} | tee -a "$logfile" 2>&1
+} | tee -a "$log_file" 2>&1
 
 exit 0
