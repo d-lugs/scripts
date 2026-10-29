@@ -19,13 +19,13 @@ log_dir="/var/log/update"
 if [ ! -d "$log_dir" ]; then
     mkdir $log_dir
 fi
-log_file="$logdir/update-$(date +"%m%d%Y").log"
+log_file="$logdir/update_$(date +"%m%d%Y").log"
 
 # Rotate logs
-keep_logs="$(ls $log_dir | grep -oP "^backup_\d{8}\.log$" | tail -5)"
+keep_logs="$(ls $log_dir | grep -oP "^update_\d{8}\.log$" | tail -5)"
 for file in $(ls $log_dir); do
     # skip files that aren't backup logs
-    if [ -z $(echo $file | grep -oP "^backup_\d{8}\.log$") ]; then
+    if [ -z $(echo $file | grep -oP "^update_\d{8}\.log$") ]; then
         continue
     elif [[ "$file" != "$(echo $keep_logs | grep -o $file)" ]]; then
         rm -f $log_dir/$file
